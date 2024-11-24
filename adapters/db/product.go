@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"go-hexagonal/application"
+	"log"
 )
 
 type ProductDb struct {
@@ -10,6 +11,9 @@ type ProductDb struct {
 }
 
 func NewProductDb(db *sql.DB) *ProductDb {
+	if db == nil {
+		log.Fatal("database connection cannot be nil")
+	}
 	return &ProductDb{db: db}
 }
 
@@ -29,18 +33,23 @@ func (p *ProductDb) Get(id string) (application.ProductInterface, error) {
 
 func (p *ProductDb) Save(product application.ProductInterface) (application.ProductInterface, error) {
 	var rows int
-	p.db.QueryRow("Select count(*) from products where id=?", product.GetID()).Scan(&rows)
+	err := p.db.QueryRow("Select count(*) from products where id=?", product.GetID()).Scan(&rows)
+	if err != nil {
+		return nil, err
+	}
+
 	if rows == 0 {
 		_, err := p.create(product)
 		if err != nil {
 			return nil, err
-		} else {
-			_, err := p.update(product)
-			if err != nil {
-				return nil, err
-			}
+		}
+	} else {
+		_, err := p.update(product)
+		if err != nil {
+			return nil, err
 		}
 	}
+
 	return product, nil
 }
 
@@ -49,12 +58,9 @@ func (p *ProductDb) create(product application.ProductInterface) (application.Pr
 	if err != nil {
 		return nil, err
 	}
+	defer stmt.Close()
 
 	_, err = stmt.Exec(product.GetID(), product.GetName(), product.GetPrice(), product.GetStatus())
-	if err != nil {
-		return nil, err
-	}
-	err = stmt.Close()
 	if err != nil {
 		return nil, err
 	}
