@@ -4,7 +4,9 @@ go 1.22.0
 
 require (
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2
+	github.com/codegangsta/negroni v1.0.0
 	github.com/golang/mock v1.6.0
+	github.com/gorilla/mux v1.8.0
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/poring86/go-hexagonal v0.0.0-20230413183424-855e480046b8
 	github.com/satori/go.uuid v1.2.0
