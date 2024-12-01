@@ -72,9 +72,6 @@ func init() {
 	productDb = dbInfra.NewProductDb(db)
 	productService = application.ProductService{Persistence: productDb}
 
-	// Adiciona o comando CLI
-	rootCmd.AddCommand(cliCmd)
-
 	// Configura os flags para o comando CLI
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
